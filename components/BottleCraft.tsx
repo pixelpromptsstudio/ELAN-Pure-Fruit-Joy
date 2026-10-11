@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { BOTTLE_CRAFT_FEATURES, CraftFeature } from '@/lib/constants';
 import { Check } from 'lucide-react';
+import { getAssetPath } from '@/lib/utils';
 
 export function BottleCraft() {
   const [activeFeature, setActiveFeature] = useState<CraftFeature>(BOTTLE_CRAFT_FEATURES[0]);
@@ -73,13 +74,13 @@ export function BottleCraft() {
             })}
           </div>
 
-          {/* Center Bottle Render with Hotspots */}
+          {/* Large Bottle Graphic Display (Right Column) */}
           <div className="lg:col-span-8 relative h-[600px] w-full rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/10 overflow-hidden flex items-center justify-center p-8 order-1 lg:order-2">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(200,169,106,0.15)_0%,transparent_70%)] pointer-events-none" />
 
             <div className="relative w-full h-full">
               <Image
-                src="/pr2/packaging-poster.png"
+                src={getAssetPath('/pr2/packaging-poster.webp')}
                 alt="ÉLAN Bottle Craftsmanship"
                 fill
                 className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.95)]"

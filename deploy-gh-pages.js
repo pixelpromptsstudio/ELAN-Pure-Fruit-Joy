@@ -19,6 +19,8 @@ function copyRecursiveSync(src, dest) {
   const stats = exists && fs.statSync(src);
   const isDirectory = exists && stats.isDirectory();
   if (isDirectory) {
+    const base = path.basename(src);
+    if (base === 'pr 1' || base === 'pr 2' || base === 'pr2_seq' || base === 'pr') return;
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
     fs.readdirSync(src).forEach((child) => {
       copyRecursiveSync(path.join(src, child), path.join(dest, child));
@@ -36,10 +38,12 @@ fs.writeFileSync(path.join(tempRepo, '.nojekyll'), '');
 
 console.log('Initializing temporary git repo for gh-pages deployment...');
 execSync('git init', { cwd: tempRepo, stdio: 'inherit' });
+execSync('git config http.postBuffer 524288000', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git checkout -b gh-pages', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git add -A', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git commit -m "Deploy ÉLAN luxury site to GitHub Pages"', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git remote add origin https://github.com/dhruvvv-kush/-ELAN-Pure-Fruit-Joy.git', { cwd: tempRepo, stdio: 'inherit' });
+
 
 console.log('Pushing to gh-pages branch on GitHub...');
 execSync('git push origin gh-pages --force', { cwd: tempRepo, stdio: 'inherit' });

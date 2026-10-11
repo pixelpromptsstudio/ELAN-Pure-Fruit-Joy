@@ -25,7 +25,16 @@ export function Hero() {
     };
     window.addEventListener('resize', handleResize);
 
-    const particleCount = 45;
+    let isVisible = true;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isVisible = entry.isIntersecting;
+      });
+    });
+    observer.observe(canvas);
+
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 24 : 40;
     const particles = Array.from({ length: particleCount }).map(() => ({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -37,27 +46,29 @@ export function Hero() {
     }));
 
     const render = () => {
-      ctx.clearRect(0, 0, width, height);
+      if (isVisible) {
+        ctx.clearRect(0, 0, width, height);
 
-      particles.forEach((p) => {
-        p.y += p.speedY;
-        p.x += p.speedX;
-        p.opacity += Math.sin(Date.now() * p.pulse) * 0.005;
+        particles.forEach((p) => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.opacity += Math.sin(Date.now() * p.pulse) * 0.005;
 
-        if (p.y < 0) {
-          p.y = height;
-          p.x = Math.random() * width;
-        }
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
+          if (p.y < 0) {
+            p.y = height;
+            p.x = Math.random() * width;
+          }
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200, 169, 106, ${Math.max(0.1, Math.min(0.8, p.opacity))})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(200, 169, 106, 0.5)';
-        ctx.fill();
-      });
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200, 169, 106, ${Math.max(0.1, Math.min(0.8, p.opacity))})`;
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = 'rgba(200, 169, 106, 0.4)';
+          ctx.fill();
+        });
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -65,6 +76,7 @@ export function Hero() {
     render();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };

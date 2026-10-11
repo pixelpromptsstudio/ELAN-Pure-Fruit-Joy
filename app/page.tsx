@@ -25,11 +25,12 @@ export default function Home() {
 
   // Initialize Lenis smooth scroll
   useEffect(() => {
+    const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
     const lenis = new Lenis({
-      duration: 1.4,
+      duration: isTouch ? 0.8 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2,
+      syncTouch: false,
     });
 
     function raf(time: number) {

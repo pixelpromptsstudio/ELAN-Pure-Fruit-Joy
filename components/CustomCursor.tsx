@@ -8,8 +8,14 @@ export function CustomCursor() {
   const [cursorText, setCursorText] = useState('');
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+      setIsTouch(true);
+      return;
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       if (!isVisible) setIsVisible(true);
@@ -42,7 +48,7 @@ export function CustomCursor() {
     };
   }, [isVisible]);
 
-  if (!isVisible) return null;
+  if (!isVisible || isTouch) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">

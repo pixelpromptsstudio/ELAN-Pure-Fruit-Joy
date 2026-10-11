@@ -1,3 +1,5 @@
+import { getAssetPath } from './utils';
+
 export interface Flavour {
   id: string;
   name: string;
@@ -26,7 +28,7 @@ export const FLAVOURS: Flavour[] = [
     price: "₹249",
     priceNum: 249,
     description: "Sun-ripened Alphonso mangoes cold-pressed within hours of harvest for velvety texture and intense tropical aroma.",
-    image: "/pr1/mango.png",
+    image: getAssetPath("/pr1/mango.webp"),
     color: "#F4A623",
     gradient: "from-amber-500/20 via-orange-600/10 to-transparent",
     accentColor: "#F4A623",
@@ -44,7 +46,7 @@ export const FLAVOURS: Flavour[] = [
     price: "₹229",
     priceNum: 229,
     description: "Crisp pink guava gently pressed to preserve delicate botanical floral notes and lush, refreshing sweetness.",
-    image: "/pr1/guava.png",
+    image: getAssetPath("/pr1/guava.webp"),
     color: "#F78CA2",
     gradient: "from-pink-500/20 via-rose-500/10 to-transparent",
     accentColor: "#F78CA2",
@@ -62,7 +64,7 @@ export const FLAVOURS: Flavour[] = [
     price: "₹269",
     priceNum: 269,
     description: "Hand-harvested ruby red strawberries cold-pressed raw to capture pure garden freshness and vibrant natural ruby red tones.",
-    image: "/pr1/strawberry.png",
+    image: getAssetPath("/pr1/strawberry.webp"),
     color: "#E53935",
     gradient: "from-red-600/20 via-rose-700/10 to-transparent",
     accentColor: "#E53935",
@@ -80,7 +82,7 @@ export const FLAVOURS: Flavour[] = [
     price: "₹299",
     priceNum: 299,
     description: "An opulent blend of dark blackberries, blueberries, wild raspberries, and Concord grapes for a complex, decadent flavor profile.",
-    image: "/pr1/mixed-berry.png",
+    image: getAssetPath("/pr1/mixed-berry.webp"),
     color: "#6B3A91",
     gradient: "from-purple-700/20 via-indigo-900/10 to-transparent",
     accentColor: "#6B3A91",
@@ -200,35 +202,35 @@ export const GALLERY_ITEMS = [
     id: "gallery-1",
     title: "Pure Fruit Nectar",
     subtitle: "Harvested at Peak Ripeness in Bhopal",
-    image: "/pr2/lineup.png",
+    image: getAssetPath("/pr2/lineup.webp"),
     aspectRatio: "aspect-[16/9]"
   },
   {
     id: "gallery-2",
     title: "Botanical Craftsmanship",
     subtitle: "Heavy Crystal Glass & Oak",
-    image: "/pr2/craft-poster.png",
+    image: getAssetPath("/pr2/craft-poster.webp"),
     aspectRatio: "aspect-[4/5]"
   },
   {
     id: "gallery-3",
     title: "Alphonso Mango Nectar",
     subtitle: "Golden Sunshine Cold Pressed",
-    image: "/pr2/mango-editorial.png",
+    image: getAssetPath("/pr2/mango-editorial.webp"),
     aspectRatio: "aspect-[3/4]"
   },
   {
     id: "gallery-4",
     title: "Tropical Guava Glow",
     subtitle: "Floral Velvet Nectar from Bhopal",
-    image: "/pr2/guava-editorial.png",
+    image: getAssetPath("/pr2/guava-editorial.webp"),
     aspectRatio: "aspect-[4/5]"
   },
   {
     id: "gallery-5",
     title: "Wild Berry Harvest",
     subtitle: "Deep Forest Currants & Blueberries",
-    image: "/pr2/berry-editorial.png",
+    image: getAssetPath("/pr2/berry-editorial.webp"),
     aspectRatio: "aspect-[3/4]"
   }
 ];

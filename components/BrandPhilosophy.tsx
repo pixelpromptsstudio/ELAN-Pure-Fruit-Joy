@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Leaf, ShieldCheck, Sun } from 'lucide-react';
 
+import { getAssetPath } from '@/lib/utils';
+
 export function BrandPhilosophy() {
   return (
     <section id="philosophy" className="relative py-36 px-6 lg:px-12 bg-elan-dark overflow-hidden">
@@ -58,7 +60,7 @@ export function BrandPhilosophy() {
             className="lg:col-span-5 relative h-[550px] w-full rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.9)] group"
           >
             <Image
-              src="/pr2/lineup.png"
+              src={getAssetPath('/pr2/lineup.webp')}
               alt="ÉLAN Luxury Lineup Editorial"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-1000"
