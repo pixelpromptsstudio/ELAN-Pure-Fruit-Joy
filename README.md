@@ -53,8 +53,8 @@ Make sure you have **Node.js 18.x** or higher installed.
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/dhruvvv-kush/-ELAN-Pure-Fruit-Joy.git
-   cd -ELAN-Pure-Fruit-Joy
+   git clone https://github.com/pixelpromptsstudio/ELAN-Pure-Fruit-Joy.git
+   cd ELAN-Pure-Fruit-Joy
    ```
 
 2. **Install dependencies**:

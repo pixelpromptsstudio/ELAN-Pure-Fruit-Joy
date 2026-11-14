@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { NUTRITION_BENEFITS } from '@/lib/constants';
 import { Apple, ThermometerSnowflake, Ban, ShieldCheck, Zap, Leaf } from 'lucide-react';
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, typeof Apple> = {
   Apple,
   ThermometerSnowflake,
   Ban,
@@ -18,7 +18,12 @@ export function Benefits() {
   return (
     <section id="nutrition" className="relative py-32 px-6 lg:px-12 bg-elan-dark overflow-hidden border-t border-white/5">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-elan-gold/10 rounded-full blur-[160px] pointer-events-none" />
+      <div
+        className="absolute top-1/3 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(200, 169, 106, 0.08) 0%, transparent 70%)',
+        }}
+      />
 
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -53,24 +58,31 @@ export function Benefits() {
   );
 }
 
-function GlassBenefitCard({ benefit, index }: { benefit: any; index: number }) {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-
+function GlassBenefitCard({
+  benefit,
+  index,
+}: {
+  benefit: (typeof NUTRITION_BENEFITS)[number];
+  index: number;
+}) {
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const IconComponent = ICON_MAP[benefit.iconName] || Apple;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-
-    setRotateX((-y / rect.height) * 16);
-    setRotateY((x / rect.width) * 16);
+    const rotateX = (-y / rect.height) * 16;
+    const rotateY = (x / rect.width) * 16;
+    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   };
 
   const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    }
   };
 
   return (
@@ -79,37 +91,41 @@ function GlassBenefitCard({ benefit, index }: { benefit: any; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay: index * 0.12 }}
-      style={{
-        transformStyle: 'preserve-3d',
-        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      data-cursor="NUTRITION"
-      className="group relative rounded-3xl p-8 bg-gradient-to-b from-white/[0.05] via-white/[0.02] to-transparent border border-white/10 hover:border-elan-gold/50 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between h-72 shadow-xl hover:shadow-[0_20px_40px_rgba(200,169,106,0.15)] overflow-hidden cursor-pointer"
     >
-      {/* Top Bar: Icon & Stat Number */}
-      <div className="flex items-start justify-between relative z-10">
-        <div className="w-12 h-12 rounded-2xl bg-elan-gold/10 border border-elan-gold/30 flex items-center justify-center text-elan-gold group-hover:bg-elan-gold group-hover:text-elan-dark transition-all duration-500 shadow-[0_0_20px_rgba(200,169,106,0.2)]">
-          <IconComponent className="w-6 h-6" />
+      <div
+        ref={cardRef}
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        data-cursor="NUTRITION"
+        className="group relative rounded-3xl p-8 bg-gradient-to-b from-white/[0.05] via-white/[0.02] to-transparent border border-white/10 hover:border-elan-gold/50 transition-all duration-300 backdrop-blur-xl flex flex-col justify-between h-72 shadow-xl hover:shadow-[0_20px_40px_rgba(200,169,106,0.15)] overflow-hidden cursor-pointer will-change-transform"
+      >
+        {/* Top Bar: Icon & Stat Number */}
+        <div className="flex items-start justify-between relative z-10">
+          <div className="w-12 h-12 rounded-2xl bg-elan-gold/10 border border-elan-gold/30 flex items-center justify-center text-elan-gold group-hover:bg-elan-gold group-hover:text-elan-dark transition-all duration-500 shadow-[0_0_20px_rgba(200,169,106,0.2)]">
+            <IconComponent className="w-6 h-6" aria-hidden="true" />
+          </div>
+          <span className="font-serif text-4xl sm:text-5xl font-semibold text-gold-gradient tracking-tight">
+            {benefit.stat}
+          </span>
         </div>
-        <span className="font-serif text-4xl sm:text-5xl font-semibold text-gold-gradient tracking-tight">
-          {benefit.stat}
-        </span>
-      </div>
 
-      {/* Bottom Bar: Title & Description */}
-      <div className="relative z-10 mt-6">
-        <h3 className="font-serif text-2xl text-elan-cream mb-2 group-hover:text-elan-gold transition-colors">
-          {benefit.label}
-        </h3>
-        <p className="font-sans text-xs text-elan-cream/70 font-light leading-relaxed">
-          {benefit.description}
-        </p>
-      </div>
+        {/* Bottom Bar: Title & Description */}
+        <div className="relative z-10 mt-6">
+          <h3 className="font-serif text-2xl text-elan-cream mb-2 group-hover:text-elan-gold transition-colors">
+            {benefit.label}
+          </h3>
+          <p className="font-sans text-xs text-elan-cream/70 font-light leading-relaxed">
+            {benefit.description}
+          </p>
+        </div>
 
-      {/* Shimmer Light Reflection */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        {/* Shimmer Light Reflection */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      </div>
     </motion.div>
   );
 }

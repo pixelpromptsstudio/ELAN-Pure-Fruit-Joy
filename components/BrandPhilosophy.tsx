@@ -61,8 +61,9 @@ export function BrandPhilosophy() {
           >
             <Image
               src={getAssetPath('/pr2/lineup.webp')}
-              alt="ÉLAN Luxury Lineup Editorial"
+              alt="ÉLAN Pure Nectar Collection — cold-pressed raw fruit juice bottles crafted in Bhopal, India"
               fill
+              sizes="(max-width: 1024px) 100vw, 42vw"
               className="object-cover group-hover:scale-105 transition-transform duration-1000"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-elan-dark via-transparent to-transparent opacity-80" />

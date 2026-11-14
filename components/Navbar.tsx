@@ -2,21 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Volume2, VolumeX } from 'lucide-react';
+import { luxuryAudio } from '@/lib/audio';
 
 export function Navbar({ onOpenOrder }: { onOpenOrder: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  useEffect(() => {
+    setIsMuted(luxuryAudio.isMuted());
+    return luxuryAudio.subscribe(setIsMuted);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 80) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      const next = window.scrollY > 80;
+      setIsScrolled((prev) => (prev === next ? prev : next));
     };
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -38,15 +43,16 @@ export function Navbar({ onOpenOrder }: { onOpenOrder: () => void }) {
             : 'py-7 bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex items-center justify-between gap-2">
           {/* Brand Logo */}
           <a
             href="#"
+            aria-label="ÉLAN Pure Fruit Joy — Home"
             data-cursor="ÉLAN"
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-2.5 sm:gap-3 group shrink-0"
           >
-            <div className="w-10 h-10 rounded-full border border-elan-gold/40 flex items-center justify-center bg-elan-gold/5 group-hover:border-elan-gold group-hover:bg-elan-gold/15 transition-all">
-              <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5 text-elan-gold">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-elan-gold/40 flex items-center justify-center bg-elan-gold/5 group-hover:border-elan-gold group-hover:bg-elan-gold/15 transition-all shrink-0">
+              <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" className="w-4 h-4 sm:w-5 sm:h-5 text-elan-gold">
                 <path
                   d="M16 3C11 8 8 13.5 8 18.5C8 22.6421 11.3579 26 15.5 26C19.6421 26 23 22.6421 23 18.5C23 13.5 20 8 16 3Z"
                   stroke="currentColor"
@@ -63,17 +69,17 @@ export function Navbar({ onOpenOrder }: { onOpenOrder: () => void }) {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="font-serif text-xl sm:text-2xl tracking-[0.25em] text-elan-cream font-medium">
+              <span className="font-serif text-lg sm:text-2xl tracking-[0.22em] sm:tracking-[0.25em] text-elan-cream font-medium whitespace-nowrap leading-none">
                 ÉLAN
               </span>
-              <span className="text-[8px] font-sans tracking-[0.3em] uppercase text-elan-gold font-light">
+              <span className="text-[7px] sm:text-[8px] font-sans tracking-[0.22em] sm:tracking-[0.3em] uppercase text-elan-gold font-light whitespace-nowrap mt-1">
                 PURE FRUIT JOY
               </span>
             </div>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -87,19 +93,41 @@ export function Navbar({ onOpenOrder }: { onOpenOrder: () => void }) {
           </nav>
 
           {/* Header Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* Opt-In Crystal Sound Toggle */}
+            <button
+              type="button"
+              onClick={() => luxuryAudio.toggleMute()}
+              aria-label={isMuted ? 'Enable subtle acoustic chimes' : 'Mute acoustic chimes'}
+              aria-pressed={!isMuted}
+              title={isMuted ? 'Enable subtle chimes' : 'Mute chimes'}
+              className={`p-2 sm:p-2.5 rounded-full border transition-all duration-300 ${
+                !isMuted
+                  ? 'border-elan-gold bg-elan-gold/15 text-elan-gold shadow-[0_0_14px_rgba(200,169,106,0.25)]'
+                  : 'border-white/15 bg-white/5 text-elan-cream/60 hover:text-elan-gold hover:border-elan-gold/40'
+              }`}
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" aria-hidden="true" /> : <Volume2 className="w-4 h-4" aria-hidden="true" />}
+            </button>
+
             {/* Primary Order CTA */}
             <button
-              onClick={onOpenOrder}
+              onClick={() => {
+                luxuryAudio.playClick();
+                onOpenOrder();
+              }}
               data-cursor="ORDER"
-              className="px-6 py-2.5 rounded-full border border-elan-gold/40 bg-elan-gold/10 hover:bg-elan-gold hover:text-elan-dark text-elan-gold text-xs font-serif tracking-[0.2em] uppercase transition-all duration-300 flex items-center gap-2"
+              className="px-3.5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-elan-gold/40 bg-elan-gold/10 hover:bg-elan-gold hover:text-elan-dark text-elan-gold text-[10px] sm:text-xs font-serif tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
             >
               <span>COLLECTION</span>
             </button>
 
             {/* Mobile Hamburger Toggle */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
               className="md:hidden p-2 text-elan-cream hover:text-elan-gold transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -117,7 +145,7 @@ export function Navbar({ onOpenOrder }: { onOpenOrder: () => void }) {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-30 bg-elan-dark/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8 md:hidden"
           >
-            <nav className="flex flex-col items-center gap-8 my-auto text-center">
+            <nav aria-label="Mobile navigation" className="flex flex-col items-center gap-8 my-auto text-center">
               {navLinks.map((link) => (
                 <a
                   key={link.name}

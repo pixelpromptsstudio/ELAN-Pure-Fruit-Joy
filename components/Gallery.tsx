@@ -1,15 +1,29 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { GALLERY_ITEMS } from '@/lib/constants';
 import { Maximize2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { luxuryAudio } from '@/lib/audio';
+import { smoothScrollBy, setLenisPaused } from '@/lib/lenis';
 
 export function Gallery() {
   const targetRef = useRef<HTMLDivElement | null>(null);
-  const [activeItem, setActiveItem] = useState<any | null>(null);
+  const [activeItem, setActiveItem] = useState<(typeof GALLERY_ITEMS)[number] | null>(null);
+
+  useEffect(() => {
+    setLenisPaused(!!activeItem);
+    if (!activeItem) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveItem(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      setLenisPaused(false);
+    };
+  }, [activeItem]);
 
   // Scroll Progress across sticky 350vh section
   const { scrollYProgress } = useScroll({
@@ -24,7 +38,7 @@ export function Gallery() {
     luxuryAudio.playClick();
     if (!targetRef.current) return;
     const amount = dir === 'left' ? -350 : 350;
-    window.scrollBy({ top: amount, behavior: 'smooth' });
+    smoothScrollBy(amount, 0.7);
   };
 
   return (
@@ -46,18 +60,22 @@ export function Gallery() {
             </span>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => scrollTrackBy('left')}
                 className="p-2.5 rounded-full border border-elan-gold/30 text-elan-gold hover:bg-elan-gold hover:text-elan-dark transition-all"
+                aria-label="Previous gallery image"
                 title="Previous image"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               </button>
               <button
+                type="button"
                 onClick={() => scrollTrackBy('right')}
                 className="p-2.5 rounded-full border border-elan-gold/30 text-elan-gold hover:bg-elan-gold hover:text-elan-dark transition-all"
+                aria-label="Next gallery image"
                 title="Next image"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -65,9 +83,9 @@ export function Gallery() {
 
         {/* Horizontal Moving Track */}
         <div className="relative w-full overflow-hidden py-4">
-          <motion.div style={{ x }} className="flex gap-8 pl-6 md:pl-20 pr-24 w-max">
+          <motion.div style={{ x }} className="flex gap-8 pl-6 md:pl-20 pr-24 w-max will-change-transform">
             {GALLERY_ITEMS.map((item, idx) => (
-              <motion.div
+              <motion.figure
                 key={item.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -83,14 +101,14 @@ export function Gallery() {
               >
                 <Image
                   src={item.image}
-                  alt={item.title}
+                  alt={`ÉLAN ${item.title} — ${item.subtitle}`}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95 group-hover:brightness-105"
                   sizes="(max-width: 768px) 320px, 540px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-                <div className="absolute bottom-8 left-8 right-8 z-10 flex justify-between items-end">
+                <figcaption className="absolute bottom-8 left-8 right-8 z-10 flex justify-between items-end">
                   <div>
                     <span className="text-[10px] font-sans tracking-[0.3em] uppercase text-elan-gold block mb-1">
                       {item.subtitle}
@@ -100,10 +118,10 @@ export function Gallery() {
                     </h3>
                   </div>
                   <div className="w-10 h-10 rounded-full border border-elan-gold/30 flex items-center justify-center text-elan-gold group-hover:bg-elan-gold group-hover:text-elan-dark transition-all">
-                    <Maximize2 className="w-4 h-4" />
+                    <Maximize2 className="w-4 h-4" aria-hidden="true" />
                   </div>
-                </div>
-              </motion.div>
+                </figcaption>
+              </motion.figure>
             ))}
           </motion.div>
         </div>
@@ -111,24 +129,32 @@ export function Gallery() {
 
       {/* Lightbox Modal */}
       {activeItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-2xl">
+        <div
+          onClick={() => setActiveItem(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-2xl"
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
+            data-lenis-prevent
+            onClick={(e) => e.stopPropagation()}
             className="relative max-w-5xl w-full h-[80vh] rounded-3xl overflow-hidden border border-elan-gold/30 bg-elan-dark p-2 shadow-[0_0_80px_rgba(0,0,0,0.95)]"
           >
             <button
+              type="button"
               onClick={() => setActiveItem(null)}
+              aria-label="Close image preview"
               className="absolute top-6 right-6 z-20 p-3 rounded-full bg-black/60 border border-white/20 text-elan-cream hover:text-elan-gold transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-6 h-6" aria-hidden="true" />
             </button>
             <div className="relative w-full h-full rounded-2xl overflow-hidden">
               <Image
                 src={activeItem.image}
-                alt={activeItem.title}
+                alt={`ÉLAN ${activeItem.title} — ${activeItem.subtitle}`}
                 fill
+                sizes="(max-width: 1024px) 100vw, 1024px"
                 className="object-contain"
               />
               <div className="absolute bottom-6 left-6 z-10 bg-elan-dark/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10">

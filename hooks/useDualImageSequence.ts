@@ -1,8 +1,15 @@
 import { useImageSequence } from './useImageSequence';
 
-export function useDualImageSequence({ seq1Path, frameCountPerSeq }: { seq1Path: string; seq2Path?: string; frameCountPerSeq: number }) {
+export function useDualImageSequence({
+  seq1Path,
+  frameCountPerSeq,
+}: {
+  seq1Path: string;
+  seq2Path?: string;
+  frameCountPerSeq: number;
+}) {
   const { images, loadedCount, isLoaded, progress, frameCount } = useImageSequence({
-    folderPath: seq1Path || '/pr1_seq',
+    folderPath: seq1Path || '/pr_seq',
     frameCount: frameCountPerSeq || 240,
   });
 

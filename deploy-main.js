@@ -33,7 +33,7 @@ execSync('git init', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git checkout -b main', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git add -A', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git commit -m "feat: complete luxury ÉLAN web application codebase"', { cwd: tempRepo, stdio: 'inherit' });
-execSync('git remote add origin https://github.com/dhruvvv-kush/-ELAN-Pure-Fruit-Joy.git', { cwd: tempRepo, stdio: 'inherit' });
+execSync('git remote add origin https://github.com/pixelpromptsstudio/ELAN-Pure-Fruit-Joy.git', { cwd: tempRepo, stdio: 'inherit' });
 
 console.log('Pushing main branch to GitHub...');
 execSync('git push origin main --force', { cwd: tempRepo, stdio: 'inherit' });

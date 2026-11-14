@@ -1,0 +1,23 @@
+{
+  "name": "ÉLAN — Pure Fruit Joy",
+  "short_name": "ÉLAN",
+  "description": "100% raw cold-pressed fruit juice crafted in Bhopal, India. Zero added sugar or preservatives — Alphonso Mango, Pink Guava & Berry in crystal glass.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#C8A96A",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
+

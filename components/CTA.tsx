@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Play, ArrowUpRight, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { FLAVOURS, Flavour } from '@/lib/constants';
 import { luxuryAudio } from '@/lib/audio';
 
@@ -30,28 +29,27 @@ export function CTA({ onOpenOrder, onWatchStory }: CTAProps) {
   const badgeBg = useTransform(scrollYProgress, [0.2, 0.8], ['rgba(200,169,106,0.15)', 'rgba(15,14,12,0.08)']);
   const badgeBorder = useTransform(scrollYProgress, [0.2, 0.8], ['rgba(200,169,106,0.5)', 'rgba(15,14,12,0.25)']);
   const badgeText = useTransform(scrollYProgress, [0.2, 0.8], ['#DFBF7B', '#7E6229']);
+  const accentGoldText = useTransform(scrollYProgress, [0.2, 0.8], ['#E5C682', '#785617']);
 
   const handlePrimaryClick = () => {
     luxuryAudio.playClick();
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.7 },
-      colors: ['#C8A96A', '#F4A623', '#F78CA2', '#6B3A91', '#58754A'],
-    });
     onOpenOrder();
   };
 
   return (
     <motion.section
+      id="reserve"
       ref={containerRef}
+      aria-label="Reserve ÉLAN Cold-Pressed Fruit Juice"
       style={{ backgroundColor: bgColor }}
-      className="relative py-36 px-6 lg:px-12 transition-colors duration-700 overflow-hidden"
+      className="relative py-36 px-6 lg:px-12 overflow-hidden"
     >
       {/* Dynamic Color Aura behind selected bottle */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full blur-[150px] pointer-events-none transition-all duration-1000 opacity-50"
-        style={{ backgroundColor: selectedBottle.color }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full pointer-events-none transition-all duration-700 opacity-60"
+        style={{
+          background: `radial-gradient(circle, ${selectedBottle.color}50 0%, transparent 70%)`,
+        }}
       />
 
       <div className="max-w-5xl mx-auto flex flex-col items-center text-center relative z-10">
@@ -103,8 +101,10 @@ export function CTA({ onOpenOrder, onWatchStory }: CTAProps) {
         {/* Floating Rotating Premium Bottle in Center */}
         <div className="relative w-64 h-96 sm:w-80 sm:h-[440px] my-4">
           <div
-            className="absolute inset-0 rounded-full blur-3xl opacity-50 transition-all duration-700"
-            style={{ backgroundColor: selectedBottle.color }}
+            className="absolute inset-0 rounded-full opacity-50 transition-opacity duration-700 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle, ${selectedBottle.color}70 0%, transparent 70%)`,
+            }}
           />
 
           <AnimatePresence mode="wait">
@@ -114,7 +114,7 @@ export function CTA({ onOpenOrder, onWatchStory }: CTAProps) {
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               exit={{ opacity: 0, scale: 0.9, rotateY: 20 }}
               transition={{ duration: 0.6 }}
-              className="relative w-full h-full"
+              className="relative w-full h-full will-change-transform"
             >
               <motion.div
                 animate={{
@@ -126,13 +126,14 @@ export function CTA({ onOpenOrder, onWatchStory }: CTAProps) {
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
-                className="relative w-full h-full"
+                className="relative w-full h-full will-change-transform"
               >
                 <Image
                   src={selectedBottle.image}
-                  alt={selectedBottle.name}
+                  alt={`ÉLAN ${selectedBottle.name} (${selectedBottle.volume}) cold-pressed raw fruit juice bottle`}
                   fill
-                  className="object-contain drop-shadow-[0_35px_65px_rgba(0,0,0,0.45)]"
+                  sizes="(max-width: 640px) 256px, 320px"
+                  className="object-contain"
                 />
               </motion.div>
             </motion.div>
@@ -156,7 +157,9 @@ export function CTA({ onOpenOrder, onWatchStory }: CTAProps) {
           className="font-serif text-4xl sm:text-7xl md:text-8xl font-medium tracking-tight mb-6 leading-none"
         >
           Taste Nature.<br />
-          <span className="italic font-light text-gold-gradient">Experience ÉLAN.</span>
+          <motion.span style={{ color: accentGoldText }} className="italic font-medium">
+            Experience ÉLAN.
+          </motion.span>
         </motion.h2>
 
         {/* Description Text */}

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { X, RefreshCw, ShoppingBag, IndianRupee, MapPin, Phone, User, Database, ShieldCheck } from 'lucide-react';
+import { loadConciergeOrders, HarvestOrder } from '@/lib/orders';
+import { setLenisPaused } from '@/lib/lenis';
 
 interface AdminOrdersModalProps {
   isOpen: boolean;
@@ -11,69 +13,84 @@ interface AdminOrdersModalProps {
 
 export function AdminOrdersModal({ isOpen, onClose }: AdminOrdersModalProps) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<{
+    totalOrders: number;
+    totalRevenue: number;
+    orders: HarvestOrder[];
+  } | null>(null);
 
-  const fetchAdminOrders = async () => {
+  const fetchAdminOrders = useCallback(async () => {
     setLoading(true);
-    try {
-      const res = await fetch('/api/orders');
-      const json = await res.json();
-      if (json.success) {
-        setData(json);
-      }
-    } catch (err) {
-      console.error('Failed to fetch admin orders', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const snapshot = await loadConciergeOrders();
+    setData(snapshot);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      fetchAdminOrders();
-    }
-  }, [isOpen]);
+    setLenisPaused(isOpen);
+    if (!isOpen) return;
+    fetchAdminOrders();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      setLenisPaused(false);
+    };
+  }, [isOpen, fetchAdminOrders, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl"
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         data-lenis-prevent
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Bhopal Press House Concierge Ledger"
         className="relative w-full max-w-4xl bg-elan-dark border border-elan-gold/40 rounded-3xl overflow-hidden p-6 sm:p-10 shadow-[0_0_80px_rgba(0,0,0,0.95)] max-h-[85vh] overflow-y-auto no-scrollbar"
       >
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
+          aria-label="Close concierge ledger"
           className="absolute top-6 right-6 p-2.5 rounded-full border border-white/15 text-elan-cream hover:text-elan-gold hover:border-elan-gold transition-colors z-20"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-white/10 pb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <ShieldCheck className="w-4 h-4 text-elan-gold" />
+              <ShieldCheck className="w-4 h-4 text-elan-gold" aria-hidden="true" />
               <span className="text-[10px] font-sans tracking-[0.4em] uppercase text-elan-gold font-medium">
-                FULL-STACK BACKEND DASHBOARD
+                BHOPAL PRESS HOUSE • CONCIERGE LEDGER
               </span>
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl text-elan-cream font-medium">
-              Live Order Management
+              Chilled Dispatch Registry
             </h2>
           </div>
 
           <button
+            type="button"
             onClick={fetchAdminOrders}
             disabled={loading}
             className="px-4 py-2 rounded-full border border-elan-gold/30 bg-elan-gold/10 text-elan-gold text-xs font-serif tracking-widest uppercase hover:bg-elan-gold hover:text-elan-dark transition-all flex items-center gap-2"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            REFRESH API
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+            SYNC LEDGER
           </button>
         </div>
 
@@ -101,11 +118,11 @@ export function AdminOrdersModal({ isOpen, onClose }: AdminOrdersModalProps) {
 
           <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-              <Database className="w-6 h-6" />
+              <Database className="w-6 h-6" aria-hidden="true" />
             </div>
             <div>
-              <span className="text-[10px] text-elan-cream/60 uppercase block">Backend Status</span>
-              <span className="font-sans text-xs text-purple-300 font-medium">Next.js 15 API Active</span>
+              <span className="text-[10px] text-elan-cream/60 uppercase block">Press Window</span>
+              <span className="font-sans text-xs text-purple-300 font-medium">Dawn Batch No. 01 Active</span>
             </div>
           </div>
         </div>

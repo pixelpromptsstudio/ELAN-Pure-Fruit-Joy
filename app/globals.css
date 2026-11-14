@@ -14,7 +14,7 @@
     background-color: var(--bg-dark);
     color: #F5F1E8;
     font-family: var(--font-inter), sans-serif;
-    scroll-behavior: smooth;
+    position: relative;
     overflow-x: clip;
   }
   
@@ -22,7 +22,6 @@
     background-color: var(--bg-dark);
     color: #F5F1E8;
     position: relative;
-    user-select: none;
     overflow-x: clip;
   }
 }
@@ -54,6 +53,13 @@
 /* Luxury Gold Text Gradient */
 .text-gold-gradient {
   background: linear-gradient(135deg, #FFF5DF 0%, #C8A96A 50%, #8A6E32 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* High-Contrast Antique Gold Text Gradient for light surfaces */
+.text-gold-gradient-rich {
+  background: linear-gradient(135deg, #5C4314 0%, #8A6928 48%, #B38A3E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

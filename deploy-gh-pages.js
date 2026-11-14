@@ -42,7 +42,7 @@ execSync('git config http.postBuffer 524288000', { cwd: tempRepo, stdio: 'inheri
 execSync('git checkout -b gh-pages', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git add -A', { cwd: tempRepo, stdio: 'inherit' });
 execSync('git commit -m "Deploy ÉLAN luxury site to GitHub Pages"', { cwd: tempRepo, stdio: 'inherit' });
-execSync('git remote add origin https://github.com/dhruvvv-kush/-ELAN-Pure-Fruit-Joy.git', { cwd: tempRepo, stdio: 'inherit' });
+execSync('git remote add origin https://github.com/pixelpromptsstudio/ELAN-Pure-Fruit-Joy.git', { cwd: tempRepo, stdio: 'inherit' });
 
 
 console.log('Pushing to gh-pages branch on GitHub...');
